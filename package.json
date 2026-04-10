@@ -29,7 +29,7 @@
     "postcss": "^8.5.9",
     "tailwindcss": "^4.2.2",
     "vite": "^8.0.4",
-    "vite-plugin-pwa": "^1.2.0"
+    "vite-plugin-pwa": "^0.21.1"
   },
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "eslint.config.js",
