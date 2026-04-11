@@ -1,10 +1,18 @@
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${GEMINI_API_KEY}`
 
+function formatarRestricoes(restricoes) {
+  if (!restricoes || restricoes.length === 0) return 'nenhuma'
+  return restricoes.map(r => {
+    const alimento = typeof r === 'string' ? r : r.alimento
+    const obs = typeof r === 'string' ? '' : r.obs
+    if (obs) return `- ${alimento}: ${obs}`
+    return `- ${alimento}: não usar de nenhuma forma`
+  }).join('\n')
+}
+
 export async function gerarCardapio(perfil) {
-  const restricoesStr = perfil.restricoes?.length > 0
-    ? perfil.restricoes.join(', ')
-    : 'nenhuma'
+  const restricoesFormatadas = formatarRestricoes(perfil.restricoes)
 
   const prompt = `Você é um nutricionista especializado em hipertrofia e emagrecimento.
 Crie um cardápio diário personalizado com base no perfil abaixo.
@@ -16,18 +24,18 @@ PERFIL:
 - Objetivo: ${perfil.objetivo}
 - Frequência de treino: ${perfil.treino} por semana
 
-RESTRIÇÕES ALIMENTARES (REGRA ABSOLUTA):
-${restricoesStr}
+RESTRIÇÕES ALIMENTARES (LEIA COM ATENÇÃO):
+${restricoesFormatadas}
 
-ATENÇÃO CRÍTICA SOBRE AS RESTRIÇÕES:
-- As restrições acima são PROIBIÇÕES ABSOLUTAS. Não inclua esses alimentos em NENHUMA refeição, de NENHUMA forma.
-- Isso inclui versões derivadas, processadas, enlatadas, caseiras ou qualquer variação do alimento restrito.
-- Exemplo: se "tomate" está na lista, NÃO use tomate fresco, tomate cereja, tomate seco, molho de tomate, extrato de tomate ou qualquer produto que contenha tomate.
-- Exemplo: se "atum" está na lista, NÃO use atum fresco, atum em lata, atum temperado ou qualquer forma de atum.
-- Se violar qualquer restrição, o cardápio é INVÁLIDO.
-- Substitua sempre por alternativas que a pessoa pode comer.
+REGRAS SOBRE AS RESTRIÇÕES:
+- Cada restrição acima indica exatamente o que não pode usar.
+- Se não tiver observação, NÃO use o alimento de nenhuma forma.
+- Se tiver observação, respeite EXATAMENTE o que foi descrito.
+- Exemplo: "atum: não quero de jeito nenhum" → proibido em qualquer forma (fresco, lata, temperado).
+- Exemplo: "tomate: só não quero cru, molho tudo bem" → pode usar molho, mas não tomate cru ou fatiado.
+- Qualquer violação torna o cardápio inválido. Substitua sempre por alternativas permitidas.
 
-Responda APENAS com JSON válido, sem texto antes ou depois, sem markdown:
+Responda APENAS com JSON válido, sem texto antes ou depois, sem markdown, sem explicações:
 {
   "calorias_meta": 2800,
   "proteina_meta": 130,
