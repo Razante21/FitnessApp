@@ -83,6 +83,9 @@ const bancoDeSugestoes = [
 ]
 
 function normalizar(r) {
+  if (typeof r === "string") {
+    try { const p = JSON.parse(r); if (p.alimento) return p } catch { }
+  }
   if (typeof r === 'string') return { alimento: r, obs: '' }
   return r
 }
@@ -106,7 +109,7 @@ export default function Perfil() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
       const { data } = await supabase.from('perfis').select('*').eq('id', user.id).single()
-      if (data) setPerfil({ nome: data.nome || '', peso: data.peso || '', altura: data.altura || '', objetivo: data.objetivo || 'ganhar massa', restricoes: data.restricoes || [], treino: data.treino || '3–4x' })
+      if (data) setPerfil({ nome: data.nome || '', peso: data.peso || '', altura: data.altura || '', objetivo: data.objetivo || 'ganhar massa', restricoes: (data.restricoes || []).map(r => typeof r === "string" ? JSON.parse(r) : r), treino: data.treino || '3–4x' })
       setLoading(false)
     }
     carregarPerfil()

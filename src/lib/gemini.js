@@ -66,7 +66,7 @@ Respeite o objetivo e calcule as calorias adequadas para o perfil informado.`
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.4 }
+      generationConfig: { temperature: 0.7 }
     })
   })
 
